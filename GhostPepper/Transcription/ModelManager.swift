@@ -226,7 +226,7 @@ final class ModelManager: ObservableObject {
                         guard let manager = qwen3AsrManagerStorage as? Qwen3AsrManager else { return nil }
                         let text: String = try await manager.transcribe(
                             audioSamples: audioBuffer,
-                            language: nil as String?
+                            language: language
                         )
                         let cleaned = text.trimmingCharacters(in: .whitespacesAndNewlines)
                         return cleaned.isEmpty ? nil : cleaned
@@ -337,9 +337,12 @@ final class ModelManager: ObservableObject {
         }
     }
 
-    func transcribeWithSpeakerTagging(audioBuffer: [Float]) async -> SpeakerTaggedTranscriptionResult? {
+    func transcribeWithSpeakerTagging(
+        audioBuffer: [Float],
+        language: String? = nil
+    ) async -> SpeakerTaggedTranscriptionResult? {
         guard let model = SpeechModelCatalog.model(named: modelName),
-              model.supportsSpeakerFiltering,
+              model.supportsSpeakerTagging,
               audioBuffer.isEmpty == false else {
             return nil
         }
@@ -351,7 +354,7 @@ final class ModelManager: ObservableObject {
             defer { diarizer.cleanup() }
 
             let session = FluidAudioSpeechSession { [weak self] filteredAudio in
-                await self?.transcribe(audioBuffer: filteredAudio)
+                await self?.transcribe(audioBuffer: filteredAudio, language: language)
             }
             session.appendAudioChunk(audioBuffer)
 

@@ -22,6 +22,21 @@ struct MenuBarView: View {
                 appState.showDebugLog()
             }
 
+            Picker("Language", selection: $appState.preferredLanguage) {
+                Text(
+                    SpeechModelCatalog.model(named: appState.speechModel)?.automaticLanguageLabel
+                        ?? "Auto-detect"
+                ).tag("auto")
+                ForEach(SpeechLanguageOptions.all) { option in
+                    Text(option.name).tag(option.code)
+                }
+            }
+            .onChange(of: appState.preferredLanguage) { _, _ in
+                Task {
+                    await appState.reloadSpeechAnalyzerForPreferredLanguageIfNeeded()
+                }
+            }
+
             if appState.meetingTranscriptEnabled {
                 Divider()
 

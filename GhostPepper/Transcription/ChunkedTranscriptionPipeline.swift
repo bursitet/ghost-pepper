@@ -46,9 +46,14 @@ final class ChunkedTranscriptionPipeline {
 
     private let sampleRate: Double = 16000
 
-    init(transcriber: SpeechTranscriber, chunkDirectory: URL, chunkInterval: TimeInterval = 30.0) {
+    init(
+        transcriber: SpeechTranscriber,
+        chunkDirectory: URL,
+        chunkInterval: TimeInterval = 30.0,
+        language: String? = nil
+    ) {
         self.transcribeChunk = { samples in
-            await transcriber.transcribe(audioBuffer: samples)
+            await transcriber.transcribe(audioBuffer: samples, language: language)
         }
         self.chunkDirectory = chunkDirectory
         self.chunkInterval = chunkInterval

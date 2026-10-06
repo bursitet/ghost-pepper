@@ -13,11 +13,13 @@ final class SpeechTranscriberTests: XCTestCase {
             "openai_whisper-tiny.en",
             "openai_whisper-small.en",
             "openai_whisper-small",
+            "openai_whisper-large-v3-v20240930",
             "fluid_parakeet-v3",
             "mlx_nemotron-speech-streaming-en-0.6b-8bit",
             "mlx_nemotron-3.5-asr-streaming-0.6b-8bit",
         ]
         var expectedBackends: [SpeechBackendKind] = [
+            .whisperKit,
             .whisperKit,
             .whisperKit,
             .whisperKit,
@@ -99,6 +101,15 @@ final class SpeechTranscriberTests: XCTestCase {
         XCTAssertFalse(SpeechModelCatalog.whisperSmallMultilingual.supportsSpeakerFiltering)
         XCTAssertTrue(SpeechModelCatalog.parakeetV3.supportsSpeakerFiltering)
         XCTAssertTrue(SpeechModelCatalog.qwen3AsrInt8.supportsSpeakerFiltering)
+    }
+
+    func testWhisperAndFluidAudioModelsSupportMeetingSpeakerTagging() {
+        XCTAssertTrue(SpeechModelCatalog.whisperSmallMultilingual.supportsSpeakerTagging)
+        XCTAssertTrue(SpeechModelCatalog.whisperLargeV3Turbo.supportsSpeakerTagging)
+        XCTAssertFalse(SpeechModelCatalog.whisperLargeV3Turbo.supportsSpeakerFiltering)
+        XCTAssertFalse(SpeechModelCatalog.whisperLargeV3Turbo.isEnglishOnly)
+        XCTAssertTrue(SpeechModelCatalog.parakeetV3.supportsSpeakerTagging)
+        XCTAssertFalse(SpeechModelCatalog.speechAnalyzer.supportsSpeakerTagging)
     }
 
     func testQwen3AsrInt8Descriptor() {

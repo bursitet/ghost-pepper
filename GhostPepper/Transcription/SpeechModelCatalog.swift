@@ -47,6 +47,12 @@ struct SpeechModelDescriptor: Identifiable, Equatable {
         backend == .fluidAudio
     }
 
+    var supportsSpeakerTagging: Bool {
+        // Meeting speaker tagging diarizes the whole recording first and then
+        // transcribes each speaker span, so Whisper models can take part too.
+        backend == .fluidAudio || backend == .whisperKit
+    }
+
     var isSystemManaged: Bool {
         backend == .speechAnalyzer
     }
@@ -90,6 +96,21 @@ enum SpeechModelCatalog {
         sizeDescription: "~466 MB",
         backend: .whisperKit,
         cachePathComponents: ["openai", "whisper-small"],
+        fluidAudioVariant: nil,
+        mlxAudioRepository: nil
+    )
+
+    static let whisperLargeV3Turbo = SpeechModelDescriptor(
+        name: "openai_whisper-large-v3-v20240930",
+        pickerTitle: "Multilingual Large",
+        variantName: "large-v3 turbo",
+        sizeDescription: "~1.6 GB",
+        backend: .whisperKit,
+        cachePathComponents: [
+            "argmaxinc",
+            "whisperkit-coreml",
+            "openai_whisper-large-v3-v20240930",
+        ],
         fluidAudioVariant: nil,
         mlxAudioRepository: nil
     )
@@ -160,6 +181,7 @@ enum SpeechModelCatalog {
         whisperTiny,
         whisperSmallEnglish,
         whisperSmallMultilingual,
+        whisperLargeV3Turbo,
         parakeetV3,
         nemotronSpeechStreamingEnglish,
         nemotron35Streaming,
@@ -185,4 +207,31 @@ enum SpeechModelCatalog {
     static func model(named name: String) -> SpeechModelDescriptor? {
         availableModels.first { $0.name == name }
     }
+}
+
+struct SpeechLanguageOption: Identifiable, Equatable {
+    let code: String
+    let name: String
+
+    var id: String { code }
+}
+
+enum SpeechLanguageOptions {
+    /// Languages offered in Settings and the menu bar, in addition to "auto".
+    static let all: [SpeechLanguageOption] = [
+        SpeechLanguageOption(code: "en", name: "English"),
+        SpeechLanguageOption(code: "es", name: "Spanish"),
+        SpeechLanguageOption(code: "fr", name: "French"),
+        SpeechLanguageOption(code: "de", name: "German"),
+        SpeechLanguageOption(code: "pt", name: "Portuguese"),
+        SpeechLanguageOption(code: "it", name: "Italian"),
+        SpeechLanguageOption(code: "nl", name: "Dutch"),
+        SpeechLanguageOption(code: "zh", name: "Chinese"),
+        SpeechLanguageOption(code: "ja", name: "Japanese"),
+        SpeechLanguageOption(code: "ko", name: "Korean"),
+        SpeechLanguageOption(code: "ru", name: "Russian"),
+        SpeechLanguageOption(code: "uk", name: "Ukrainian"),
+        SpeechLanguageOption(code: "ar", name: "Arabic"),
+        SpeechLanguageOption(code: "hi", name: "Hindi"),
+    ]
 }

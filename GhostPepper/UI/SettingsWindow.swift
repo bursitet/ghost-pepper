@@ -1310,19 +1310,9 @@ struct SettingsView: View {
                             SpeechModelCatalog.model(named: appState.speechModel)?.automaticLanguageLabel
                                 ?? "Auto-detect"
                         ).tag("auto")
-                        Text("English").tag("en")
-                        Text("Spanish").tag("es")
-                        Text("French").tag("fr")
-                        Text("German").tag("de")
-                        Text("Portuguese").tag("pt")
-                        Text("Italian").tag("it")
-                        Text("Dutch").tag("nl")
-                        Text("Chinese").tag("zh")
-                        Text("Japanese").tag("ja")
-                        Text("Korean").tag("ko")
-                        Text("Russian").tag("ru")
-                        Text("Arabic").tag("ar")
-                        Text("Hindi").tag("hi")
+                        ForEach(SpeechLanguageOptions.all) { option in
+                            Text(option.name).tag(option.code)
+                        }
                     }
                     .labelsHidden()
                     .frame(maxWidth: 320, alignment: .leading)

@@ -28,6 +28,7 @@ final class MeetingSession: ObservableObject {
     private let capture: any MeetingAudioCapturing
     private var pipeline: ChunkedTranscriptionPipeline?
     private let transcriber: SpeechTranscriber
+    private let language: String?
     private let saveDirectory: URL
     private let detectedMeetingAppName: String?
     private let detectedMeetingBundleIdentifier: String?
@@ -53,6 +54,7 @@ final class MeetingSession: ObservableObject {
         meetingName: String,
         detectedMeeting: DetectedMeeting? = nil,
         transcriber: SpeechTranscriber,
+        language: String? = nil,
         saveDirectory: URL,
         ocrService: FrontmostWindowOCRService = FrontmostWindowOCRService(),
         captureStartOverride: CaptureStartOverride? = nil,
@@ -61,6 +63,7 @@ final class MeetingSession: ObservableObject {
     ) {
         self.transcript = MeetingTranscript(meetingName: meetingName)
         self.transcriber = transcriber
+        self.language = language
         self.saveDirectory = saveDirectory
         self.originalName = meetingName
         self.ocrService = ocrService
@@ -89,7 +92,8 @@ final class MeetingSession: ObservableObject {
 
         let newPipeline = ChunkedTranscriptionPipeline(
             transcriber: transcriber,
-            chunkDirectory: chunkDir
+            chunkDirectory: chunkDir,
+            language: language
         )
 
         newPipeline.onSegmentTranscribed = { [weak self] result in

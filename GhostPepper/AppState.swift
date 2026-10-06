@@ -1785,6 +1785,7 @@ class AppState: ObservableObject {
             meetingName: name,
             detectedMeeting: detectedMeeting,
             transcriber: transcriber,
+            language: preferredLanguage == "auto" ? nil : preferredLanguage,
             saveDirectory: saveDir,
             remoteSpeakerTagger: { [weak self] sessionID, audioBuffer in
                 guard let self else { return nil }
@@ -1932,7 +1933,10 @@ class AppState: ObservableObject {
         sessionID: UUID,
         audioBuffer: [Float]
     ) async -> SpeakerTaggedTranscript? {
-        guard let result = await modelManager.transcribeWithSpeakerTagging(audioBuffer: audioBuffer),
+        guard let result = await modelManager.transcribeWithSpeakerTagging(
+                  audioBuffer: audioBuffer,
+                  language: preferredLanguage == "auto" ? nil : preferredLanguage
+              ),
               let speakerTaggedTranscript = result.speakerTaggedTranscript else {
             return nil
         }
